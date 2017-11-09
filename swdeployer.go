@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/juju/persistent-cookiejar"
+	"github.com/mcuadros/go-version"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 	"gopkg.in/ini.v1"
@@ -182,6 +183,280 @@ var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
 		Parent:     94,
 		Selectable: true,
 	},
+	"5.3.3": {
+		Checked:    &FalseVariable,
+		ID:         100,
+		Major:      sw5,
+		Name:       "5.3.4",
+		Parent:     94,
+		Selectable: true,
+	},
+	"5.3.2": {
+		Checked:    &FalseVariable,
+		ID:         99,
+		Major:      sw5,
+		Name:       "5.3.2",
+		Parent:     94,
+		Selectable: true,
+	},
+	"5.3.1": {
+		Checked:    &FalseVariable,
+		ID:         98,
+		Major:      sw5,
+		Name:       "5.3.1",
+		Parent:     94,
+		Selectable: true,
+	},
+	"5.3.0": {
+		Checked:    &FalseVariable,
+		ID:         93,
+		Major:      sw5,
+		Name:       "5.3.0",
+		Parent:     94,
+		Selectable: true,
+	},
+	"5.2.27": {
+		Checked:    &FalseVariable,
+		ID:         97,
+		Major:      sw5,
+		Name:       "5.2.27",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.26": {
+		Checked:    &FalseVariable,
+		ID:         96,
+		Major:      sw5,
+		Name:       "5.2.26",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.25": {
+		Checked:    &FalseVariable,
+		ID:         95,
+		Major:      sw5,
+		Name:       "5.2.25",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.24": {
+		Checked:    &FalseVariable,
+		ID:         92,
+		Major:      sw5,
+		Name:       "5.2.24",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.23": {
+		Checked:    &FalseVariable,
+		ID:         91,
+		Major:      sw5,
+		Name:       "5.2.23",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.22": {
+		Checked:    &FalseVariable,
+		ID:         90,
+		Major:      sw5,
+		Name:       "5.2.22",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.21": {
+		Checked:    &FalseVariable,
+		ID:         89,
+		Major:      sw5,
+		Name:       "5.2.21",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.20": {
+		Checked:    &FalseVariable,
+		ID:         88,
+		Major:      sw5,
+		Name:       "5.2.20",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.19": {
+		Checked:    &FalseVariable,
+		ID:         87,
+		Major:      sw5,
+		Name:       "5.2.19",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.18": {
+		Checked:    &FalseVariable,
+		ID:         86,
+		Major:      sw5,
+		Name:       "5.2.18",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.17": {
+		Checked:    &FalseVariable,
+		ID:         85,
+		Major:      sw5,
+		Name:       "5.2.17",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.16": {
+		Checked:    &FalseVariable,
+		ID:         84,
+		Major:      sw5,
+		Name:       "5.2.16",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.15": {
+		Checked:    &FalseVariable,
+		ID:         83,
+		Major:      sw5,
+		Name:       "5.2.15",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.14": {
+		Checked:    &FalseVariable,
+		ID:         82,
+		Major:      sw5,
+		Name:       "5.2.14",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.13": {
+		Checked:    &FalseVariable,
+		ID:         81,
+		Major:      sw5,
+		Name:       "5.2.13",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.12": {
+		Checked:    &FalseVariable,
+		ID:         80,
+		Major:      sw5,
+		Name:       "5.2.12",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.11": {
+		Checked:    &FalseVariable,
+		ID:         79,
+		Major:      sw5,
+		Name:       "5.2.11",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.10": {
+		Checked:    &FalseVariable,
+		ID:         78,
+		Major:      sw5,
+		Name:       "5.2.10",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.9": {
+		Checked:    &FalseVariable,
+		ID:         77,
+		Major:      sw5,
+		Name:       "5.2.9",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.8": {
+		Checked:    &FalseVariable,
+		ID:         76,
+		Major:      sw5,
+		Name:       "5.2.8",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.7": {
+		Checked:    &FalseVariable,
+		ID:         75,
+		Major:      sw5,
+		Name:       "5.2.7",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.6": {
+		Checked:    &FalseVariable,
+		ID:         74,
+		Major:      sw5,
+		Name:       "5.2.6",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.5": {
+		Checked:    &FalseVariable,
+		ID:         73,
+		Major:      sw5,
+		Name:       "5.2.5",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.4": {
+		Checked:    &FalseVariable,
+		ID:         72,
+		Major:      sw5,
+		Name:       "5.2.4",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.3": {
+		Checked:    &FalseVariable,
+		ID:         71,
+		Major:      sw5,
+		Name:       "5.2.3",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.2": {
+		Checked:    &FalseVariable,
+		ID:         70,
+		Major:      sw5,
+		Name:       "5.2.2",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.1": {
+		Checked:    &FalseVariable,
+		ID:         69,
+		Major:      sw5,
+		Name:       "5.2.1",
+		Parent:     66,
+		Selectable: true,
+	},
+	"5.2.0": {
+		Checked:    &FalseVariable,
+		ID:         67,
+		Major:      sw5,
+		Name:       "5.2.0",
+		Parent:     66,
+		Selectable: true,
+	},
+}
+
+func compatibleVersions(from, to string) (versions []CompatibleSoftwareVersion) {
+	if to == "" {
+		to = "5.3.4"
+	}
+
+	if from == "" {
+		return
+	}
+
+	for ver, csv := range compatibleSoftwareVersions {
+		if version.Compare(ver, from, ">=") && version.Compare(ver, to, "<=") {
+			versions = append(versions, csv)
+		}
+	}
+
+	return
 }
 
 func (b *BinaryUploadResponse) SetChangelog(locale, text string) {
@@ -241,26 +516,39 @@ func (sw *ShopwareClient) update() error {
 		return fmt.Errorf("not the correct amount of responses to binary upload: %d", len(responses))
 	}
 	binaryDetails := responses[0]
+	fmt.Println("Binary uploaded")
 
 	// Then we get a big object
 	// Step 2: verify upload
 	// GET to https://api.shopware.com/plugins/5998/binaries/23660
 	// (not sure if required, because object looks identical to upload result)
 
+	// status.name == "waitingforcodereview"
+
 	// Step 3: set the metadata for this version
 	binaryDetails.SetChangelog("de_DE", sw.lastChangelogByLocale("de"))
 	binaryDetails.SetChangelog("en_GB", sw.lastChangelogByLocale("en"))
-	binaryDetails.CompatibleSoftwareVersions = append(binaryDetails.CompatibleSoftwareVersions, compatibleSoftwareVersions["5.3.4"])
+	binaryDetails.CompatibleSoftwareVersions = compatibleVersions(sw.pluginInfo.Compatibility.MinVersion, sw.pluginInfo.Compatibility.MaxVersion)
 	binaryDetails.LicenseCheckRequired = true
 	binaryDetails.Version = sw.pluginInfo.Version
 	err = sw.put(shopwareAPI+"plugins/"+strconv.Itoa(sw.pluginID)+"/binaries/"+strconv.Itoa(binaryDetails.ID), binaryDetails)
 	if err != nil {
 		return errors.Wrap(err, "unable to upload changelog data")
 	}
+	fmt.Println("Meta-data uploaded")
 
-	// PUT to https://api.shopware.com/plugins/5998/binaries/23660
+	// Step 4a:
+	fmt.Println()
+	fmt.Print("Would you like to request a code-review? (y/N) ")
+	// TODO: Scan for the reply
 
-	// Important parts: compatibleSoftwareVersions, changelogs
+	// Step 4b: POST request to /plugins/5411/reviews
+	// with empty json payload (optional?)
+	// to request code review
+
+	// Step 5: keep asking https://api.shopware.com/plugins/5411/binaries/23730/checkresults and check for the review
+
+	// Step 6: compare type.name for "automaticcodereviewsucceeded", or perhaps "requested"
 
 	// Then we might want to verify the file uploaded.
 	// GET to https://api.shopware.com/plugins/5998/binaries/23660/file?token=f02464d52f2782443447420c7bbafeed5a02e5bd73da91.19108458&shopwareMajorVersion=52
@@ -395,6 +683,10 @@ type ShopwareClient struct {
 				Value string `xml:",innerxml"`
 			} `xml:"changes"`
 		} `xml:"changelog"`
+		Compatibility struct {
+			MinVersion string `xml:"minVersion,attr"`
+			MaxVersion string `xml:"maxVersion,attr"`
+		} `xml:"compatibility"`
 	}
 }
 
