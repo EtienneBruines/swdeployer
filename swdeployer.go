@@ -5,17 +5,17 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"math/rand"
+	"mime/multipart"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"strconv"
 	"strings"
-
-	"os/exec"
-
-	"math/rand"
 
 	"github.com/juju/persistent-cookiejar"
 	"github.com/pkg/errors"
@@ -61,6 +61,7 @@ func (sw *ShopwareClient) printPluginInfo(pluginID int) error {
 	if pluginID == 0 {
 		return errors.New("plugin_id not found")
 	}
+	sw.pluginID = pluginID
 
 	req, err := http.NewRequest("GET", shopwareAPI+"plugins/"+strconv.Itoa(pluginID), nil)
 	if err != nil {
@@ -94,32 +95,21 @@ func (sw *ShopwareClient) printPluginInfo(pluginID int) error {
 	return nil
 }
 
-func (c *ShopwareClient) printNewData() error {
+func (sw *ShopwareClient) printNewData() error {
 	f, err := os.Open("plugin.xml")
 	if err != nil {
 		return errors.Wrap(err, "unable to open plugin.xml")
 	}
 
-	var pluginInfo struct {
-		Version   string `xml:"version"`
-		Changelog []struct {
-			Version string `xml:"version,attr"`
-			Changes []struct {
-				Lang  string `xml:"lang,attr"`
-				Value string `xml:",innerxml"`
-			} `xml:"changes"`
-		} `xml:"changelog"`
-	}
-
 	dec := xml.NewDecoder(f)
-	err = dec.Decode(&pluginInfo)
+	err = dec.Decode(&sw.pluginInfo)
 	if err != nil {
 		return errors.Wrap(err, "unable to decode plugin.xml")
 	}
 
-	fmt.Println("Version:\t", pluginInfo.Version, "(new)")
-	if len(pluginInfo.Changelog) > 0 {
-		last := pluginInfo.Changelog[len(pluginInfo.Changelog)-1]
+	fmt.Println("Version:\t", sw.pluginInfo.Version, "(new)")
+	if len(sw.pluginInfo.Changelog) > 0 {
+		last := sw.pluginInfo.Changelog[len(sw.pluginInfo.Changelog)-1]
 		for _, change := range last.Changes {
 			if change.Lang == "" {
 				change.Lang = "en"
@@ -136,7 +126,74 @@ func (c *ShopwareClient) printNewData() error {
 	return nil
 }
 
-func (c *ShopwareClient) update() error {
+type CompatibleSoftwareVersion struct {
+	Checked    *bool  `json:"checked,omitempty"`
+	ID         int    `json:"id"`
+	Major      string `json:"major"`
+	Name       string `json:"name"`
+	Parent     int    `json:"parent"`
+	Selectable bool   `json:"selectable"`
+}
+
+type Changelog struct {
+	ID     int `json:"id"`
+	Locale struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"locale"`
+	Text string `json:"text"`
+}
+
+type BinaryUploadResponse struct {
+	Archives []struct {
+		ID                   int     `json:"id"`
+		IonCubeEncrypted     bool    `json:"ioncubeEncrypted"`
+		RemoteLink           string  `json:"remoteLink"`
+		ShopwareMajorVersion *string `json:"shopwareMajorVersion"`
+	} `json:"archives"`
+	Assessment                 bool                        `json:"assessment"`
+	Changelogs                 []Changelog                 `json:"changelogs"`
+	CompatibleSoftwareVersions []CompatibleSoftwareVersion `json:"compatibleSoftwareVersions"`
+	CreationDate               string                      `json:"creationDate"`
+	ID                         int                         `json:"id"`
+	IonCubeEncrypted           bool                        `json:"ionCubeEncrypted"`
+	LastChangeDate             string                      `json:"lastChangeDate"`
+	LicenseCheckRequired       bool                        `json:"licenseCheckRequired"`
+	Name                       string                      `json:"name"`
+	RemoteLink                 string                      `json:"remoteLink"`
+	Status                     struct {
+		Description string `json:"description"`
+		ID          int    `json:"id"`
+		Name        string `json:"name"`
+	} `json:"status"`
+	Version string `json:"version"`
+}
+
+const sw5 = "Shopware 5"
+
+var FalseVariable = false
+
+var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
+	"5.3.4": {
+		Checked:    &FalseVariable,
+		ID:         101,
+		Major:      sw5,
+		Name:       "5.3.4",
+		Parent:     94,
+		Selectable: true,
+	},
+}
+
+func (b *BinaryUploadResponse) SetChangelog(locale, text string) {
+	for i, ch := range b.Changelogs {
+		if ch.Locale.Name == locale {
+			ch.Text = text
+		}
+		b.Changelogs[i] = ch
+	}
+}
+
+func (sw *ShopwareClient) update() error {
 	fmt.Print("Are you sure you want to deploy the new version to Shopware? (y/N) ")
 
 	var response string
@@ -161,17 +218,29 @@ func (c *ShopwareClient) update() error {
 	prefix = filepath.Base(prefix)
 
 	filename := filepath.Join(os.TempDir(), strconv.Itoa(rand.Int())+".zip")
-	cmd := exec.Command("git", "archive", "-o", filename, "-9", "--prefix", prefix, "HEAD")
+	cmd := exec.Command("git", "archive", "-o", filename, "-9", "--prefix", prefix+"/", "HEAD")
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	if err != nil {
 		return errors.Wrap(err, "unable to prepare zip file")
 	}
-	os.Remove(filename) // fail silently
+	defer os.Remove(filename)
 
 	// Step 1: upload binary
-	// POST to https://api.shopware.com/plugins/5998/binaries
-	// with multipart/form-data, name="file";
+	respBody, err := sw.uploadFile(shopwareAPI+"plugins/"+strconv.Itoa(sw.pluginID)+"/binaries", filename, prefix+".zip")
+	if err != nil {
+		return errors.Wrap(err, "unable to upload plugin zip")
+	}
+
+	var responses []BinaryUploadResponse
+	err = json.Unmarshal(respBody, &responses)
+	if err != nil {
+		return errors.Wrap(err, "unable to unmarshal upload result")
+	}
+	if len(responses) != 1 {
+		return fmt.Errorf("not the correct amount of responses to binary upload: %d", len(responses))
+	}
+	binaryDetails := responses[0]
 
 	// Then we get a big object
 	// Step 2: verify upload
@@ -179,6 +248,16 @@ func (c *ShopwareClient) update() error {
 	// (not sure if required, because object looks identical to upload result)
 
 	// Step 3: set the metadata for this version
+	binaryDetails.SetChangelog("de_DE", sw.lastChangelogByLocale("de"))
+	binaryDetails.SetChangelog("en_GB", sw.lastChangelogByLocale("en"))
+	binaryDetails.CompatibleSoftwareVersions = append(binaryDetails.CompatibleSoftwareVersions, compatibleSoftwareVersions["5.3.4"])
+	binaryDetails.LicenseCheckRequired = true
+	binaryDetails.Version = sw.pluginInfo.Version
+	err = sw.put(shopwareAPI+"plugins/"+strconv.Itoa(sw.pluginID)+"/binaries/"+strconv.Itoa(binaryDetails.ID), binaryDetails)
+	if err != nil {
+		return errors.Wrap(err, "unable to upload changelog data")
+	}
+
 	// PUT to https://api.shopware.com/plugins/5998/binaries/23660
 
 	// Important parts: compatibleSoftwareVersions, changelogs
@@ -192,6 +271,83 @@ func (c *ShopwareClient) update() error {
 	// or we have to re-use it and upload the binary again to this version
 
 	return nil
+}
+
+func (sw *ShopwareClient) put(url string, object interface{}) error {
+	b, err := json.Marshal(object)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("PUT", url, bytes.NewReader(b))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("X-Shopware-Token", sw.token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := sw.c.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 400 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return fmt.Errorf("bad status code: %d - %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+func (sw *ShopwareClient) uploadFile(url, file, name string) ([]byte, error) {
+	// Prepare a form that you will submit to that URL.
+	var b bytes.Buffer
+	w := multipart.NewWriter(&b)
+	// Add your image file
+	f, err := os.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	fw, err := w.CreateFormFile("name", file)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = io.Copy(fw, f); err != nil {
+		return nil, err
+	}
+	// Don't forget to close the multipart writer.
+	// If you don't close it, your request will be missing the terminating boundary.
+	w.Close()
+
+	// Now that you have a form, you can submit it to your handler.
+	req, err := http.NewRequest("POST", url, &b)
+	if err != nil {
+		return nil, err
+	}
+	// Don't forget to set the content type, this will contain the boundary.
+	req.Header.Set("Content-Type", w.FormDataContentType())
+	req.Header.Set("X-Shopware-Token", sw.token)
+
+	// Submit the request
+	res, err := sw.c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	// Check the response
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("bad status: %s", res.Status)
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
 }
 
 type PluginInfoResult struct {
@@ -228,6 +384,37 @@ type ShopwareClient struct {
 	username string
 	password string
 	token    string
+	pluginID int
+
+	pluginInfo struct {
+		Version   string `xml:"version"`
+		Changelog []struct {
+			Version string `xml:"version,attr"`
+			Changes []struct {
+				Lang  string `xml:"lang,attr"`
+				Value string `xml:",innerxml"`
+			} `xml:"changes"`
+		} `xml:"changelog"`
+	}
+}
+
+func (sw *ShopwareClient) lastChangelogByLocale(locale string) string {
+	if len(sw.pluginInfo.Changelog) == 0 {
+		return ""
+	}
+
+	last := sw.pluginInfo.Changelog[len(sw.pluginInfo.Changelog)-1]
+	for _, ch := range last.Changes {
+		if ch.Lang == locale {
+			return ch.Value
+		}
+	}
+
+	if len(last.Changes) == 0 {
+		return ""
+	}
+
+	return last.Changes[0].Value
 }
 
 func newClient(c *cli.Context, cfg *ini.Section) (*ShopwareClient, error) {
