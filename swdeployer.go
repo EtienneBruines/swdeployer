@@ -175,6 +175,30 @@ const sw5 = "Shopware 5"
 var FalseVariable = false
 
 var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
+	"5.3.7": {
+		Checked:    &FalseVariable,
+		ID:         104,
+		Major:      sw5,
+		Name:       "5.3.7",
+		Parent:     94,
+		Selectable: true,
+	},
+	"5.3.6": {
+		Checked:    &FalseVariable,
+		ID:         103,
+		Major:      sw5,
+		Name:       "5.3.6",
+		Parent:     94,
+		Selectable: true,
+	},
+	"5.3.5": {
+		Checked:    &FalseVariable,
+		ID:         102,
+		Major:      sw5,
+		Name:       "5.3.5",
+		Parent:     94,
+		Selectable: true,
+	},
 	"5.3.4": {
 		Checked:    &FalseVariable,
 		ID:         101,
@@ -187,7 +211,7 @@ var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
 		Checked:    &FalseVariable,
 		ID:         100,
 		Major:      sw5,
-		Name:       "5.3.4",
+		Name:       "5.3.3",
 		Parent:     94,
 		Selectable: true,
 	},
