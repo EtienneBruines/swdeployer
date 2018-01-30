@@ -857,7 +857,7 @@ func main() {
 			Email: "etienne.bruines@webcustoms.de",
 		},
 	}
-	app.Version = "0.0.1"
+	app.Version = "0.0.2"
 	app.Action = func(c *cli.Context) error {
 		err := logic(c)
 		if err != nil {
