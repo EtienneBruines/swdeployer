@@ -467,7 +467,7 @@ var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
 
 func compatibleVersions(from, to string) (versions []CompatibleSoftwareVersion) {
 	if to == "" {
-		to = "5.3.4"
+		to = "5.3.7"
 	}
 
 	if from == "" {
@@ -857,7 +857,7 @@ func main() {
 			Email: "etienne.bruines@webcustoms.de",
 		},
 	}
-	app.Version = "0.0.2"
+	app.Version = "0.0.5.3.7"
 	app.Action = func(c *cli.Context) error {
 		err := logic(c)
 		if err != nil {
