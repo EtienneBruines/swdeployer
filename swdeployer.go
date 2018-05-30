@@ -179,7 +179,7 @@ var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
         Checked:    &FalseVariable,
         ID:         112,
         Major:      sw5,
-        Name:E      "5.4.4",
+        Name:       "5.4.4",
         Parent:     105,
         Selectable: true,
     },
