@@ -175,6 +175,14 @@ const sw5 = "Shopware 5"
 var FalseVariable = false
 
 var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
+    "5.4.4": {
+        Checked:    &FalseVariable,
+        ID:         112,
+        Major:      sw5,
+        Name:E      "5.4.4",
+        Parent:     105,
+        Selectable: true,
+    },
 	"5.4.3": {
 		Checked:    &FalseVariable,
 		ID:         109,
@@ -499,7 +507,7 @@ var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
 
 func compatibleVersions(from, to string) (versions []CompatibleSoftwareVersion) {
 	if to == "" {
-		to = "5.4.3"
+		to = "5.4.4"
 	}
 
 	if from == "" {
