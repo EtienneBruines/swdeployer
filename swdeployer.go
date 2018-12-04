@@ -128,12 +128,12 @@ func (sw *ShopwareClient) printNewData() error {
 }
 
 type CompatibleSoftwareVersion struct {
-	Checked    *bool  `json:"checked,omitempty"`
-	ID         int    `json:"id"`
-	Major      string `json:"major"`
-	Name       string `json:"name"`
-	Parent     int    `json:"parent"`
-	Selectable bool   `json:"selectable"`
+	Checked    *bool       `json:"checked,omitempty"`
+	ID         int         `json:"id"`
+	Major      string      `json:"major"`
+	Name       string      `json:"name"`
+	Parent     interface{} `json:"parent"`
+	Selectable bool        `json:"selectable"`
 }
 
 type Changelog struct {
@@ -170,369 +170,28 @@ type BinaryUploadResponse struct {
 	Version string `json:"version"`
 }
 
+type PluginStatisticsResponse struct {
+	SoftwareVersions []CompatibleSoftwareVersion `json:"softwareVersions"`
+}
+
 const sw5 = "Shopware 5"
 
 var FalseVariable = false
+var TrueVariable = true
 
-var compatibleSoftwareVersions = map[string]CompatibleSoftwareVersion{
-	"5.4.6": {
-		Checked:    &FalseVariable,
-		ID:         114,
-		Major:      sw5,
-		Name:       "5.4.6",
-		Parent:     105,
-		Selectable: true,
-	},
-	"5.4.5": {
-		Checked:    &FalseVariable,
-		ID:         113,
-		Major:      sw5,
-		Name:       "5.4.5",
-		Parent:     105,
-		Selectable: true,
-	},
-	"5.4.4": {
-		Checked:    &FalseVariable,
-		ID:         112,
-		Major:      sw5,
-		Name:       "5.4.4",
-		Parent:     105,
-		Selectable: true,
-	},
-	"5.4.3": {
-		Checked:    &FalseVariable,
-		ID:         109,
-		Major:      sw5,
-		Name:       "5.4.3",
-		Parent:     105,
-		Selectable: true,
-	},
-	"5.4.2": {
-		Checked:    &FalseVariable,
-		ID:         108,
-		Major:      sw5,
-		Name:       "5.4.2",
-		Parent:     105,
-		Selectable: true,
-	},
-	"5.4.1": {
-		Checked:    &FalseVariable,
-		ID:         107,
-		Major:      sw5,
-		Name:       "5.4.1",
-		Parent:     105,
-		Selectable: true,
-	},
-	"5.4.0": {
-		Checked:    &FalseVariable,
-		ID:         106,
-		Major:      sw5,
-		Name:       "5.4.0",
-		Parent:     105,
-		Selectable: true,
-	},
-	"5.3.7": {
-		Checked:    &FalseVariable,
-		ID:         104,
-		Major:      sw5,
-		Name:       "5.3.7",
-		Parent:     94,
-		Selectable: true,
-	},
-	"5.3.6": {
-		Checked:    &FalseVariable,
-		ID:         103,
-		Major:      sw5,
-		Name:       "5.3.6",
-		Parent:     94,
-		Selectable: true,
-	},
-	"5.3.5": {
-		Checked:    &FalseVariable,
-		ID:         102,
-		Major:      sw5,
-		Name:       "5.3.5",
-		Parent:     94,
-		Selectable: true,
-	},
-	"5.3.4": {
-		Checked:    &FalseVariable,
-		ID:         101,
-		Major:      sw5,
-		Name:       "5.3.4",
-		Parent:     94,
-		Selectable: true,
-	},
-	"5.3.3": {
-		Checked:    &FalseVariable,
-		ID:         100,
-		Major:      sw5,
-		Name:       "5.3.3",
-		Parent:     94,
-		Selectable: true,
-	},
-	"5.3.2": {
-		Checked:    &FalseVariable,
-		ID:         99,
-		Major:      sw5,
-		Name:       "5.3.2",
-		Parent:     94,
-		Selectable: true,
-	},
-	"5.3.1": {
-		Checked:    &FalseVariable,
-		ID:         98,
-		Major:      sw5,
-		Name:       "5.3.1",
-		Parent:     94,
-		Selectable: true,
-	},
-	"5.3.0": {
-		Checked:    &FalseVariable,
-		ID:         93,
-		Major:      sw5,
-		Name:       "5.3.0",
-		Parent:     94,
-		Selectable: true,
-	},
-	"5.2.27": {
-		Checked:    &FalseVariable,
-		ID:         97,
-		Major:      sw5,
-		Name:       "5.2.27",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.26": {
-		Checked:    &FalseVariable,
-		ID:         96,
-		Major:      sw5,
-		Name:       "5.2.26",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.25": {
-		Checked:    &FalseVariable,
-		ID:         95,
-		Major:      sw5,
-		Name:       "5.2.25",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.24": {
-		Checked:    &FalseVariable,
-		ID:         92,
-		Major:      sw5,
-		Name:       "5.2.24",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.23": {
-		Checked:    &FalseVariable,
-		ID:         91,
-		Major:      sw5,
-		Name:       "5.2.23",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.22": {
-		Checked:    &FalseVariable,
-		ID:         90,
-		Major:      sw5,
-		Name:       "5.2.22",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.21": {
-		Checked:    &FalseVariable,
-		ID:         89,
-		Major:      sw5,
-		Name:       "5.2.21",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.20": {
-		Checked:    &FalseVariable,
-		ID:         88,
-		Major:      sw5,
-		Name:       "5.2.20",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.19": {
-		Checked:    &FalseVariable,
-		ID:         87,
-		Major:      sw5,
-		Name:       "5.2.19",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.18": {
-		Checked:    &FalseVariable,
-		ID:         86,
-		Major:      sw5,
-		Name:       "5.2.18",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.17": {
-		Checked:    &FalseVariable,
-		ID:         85,
-		Major:      sw5,
-		Name:       "5.2.17",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.16": {
-		Checked:    &FalseVariable,
-		ID:         84,
-		Major:      sw5,
-		Name:       "5.2.16",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.15": {
-		Checked:    &FalseVariable,
-		ID:         83,
-		Major:      sw5,
-		Name:       "5.2.15",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.14": {
-		Checked:    &FalseVariable,
-		ID:         82,
-		Major:      sw5,
-		Name:       "5.2.14",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.13": {
-		Checked:    &FalseVariable,
-		ID:         81,
-		Major:      sw5,
-		Name:       "5.2.13",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.12": {
-		Checked:    &FalseVariable,
-		ID:         80,
-		Major:      sw5,
-		Name:       "5.2.12",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.11": {
-		Checked:    &FalseVariable,
-		ID:         79,
-		Major:      sw5,
-		Name:       "5.2.11",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.10": {
-		Checked:    &FalseVariable,
-		ID:         78,
-		Major:      sw5,
-		Name:       "5.2.10",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.9": {
-		Checked:    &FalseVariable,
-		ID:         77,
-		Major:      sw5,
-		Name:       "5.2.9",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.8": {
-		Checked:    &FalseVariable,
-		ID:         76,
-		Major:      sw5,
-		Name:       "5.2.8",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.7": {
-		Checked:    &FalseVariable,
-		ID:         75,
-		Major:      sw5,
-		Name:       "5.2.7",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.6": {
-		Checked:    &FalseVariable,
-		ID:         74,
-		Major:      sw5,
-		Name:       "5.2.6",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.5": {
-		Checked:    &FalseVariable,
-		ID:         73,
-		Major:      sw5,
-		Name:       "5.2.5",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.4": {
-		Checked:    &FalseVariable,
-		ID:         72,
-		Major:      sw5,
-		Name:       "5.2.4",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.3": {
-		Checked:    &FalseVariable,
-		ID:         71,
-		Major:      sw5,
-		Name:       "5.2.3",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.2": {
-		Checked:    &FalseVariable,
-		ID:         70,
-		Major:      sw5,
-		Name:       "5.2.2",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.1": {
-		Checked:    &FalseVariable,
-		ID:         69,
-		Major:      sw5,
-		Name:       "5.2.1",
-		Parent:     66,
-		Selectable: true,
-	},
-	"5.2.0": {
-		Checked:    &FalseVariable,
-		ID:         67,
-		Major:      sw5,
-		Name:       "5.2.0",
-		Parent:     66,
-		Selectable: true,
-	},
-}
+var compatibleSoftwareVersions map[string]CompatibleSoftwareVersion
 
 func compatibleVersions(from, to string) (versions []CompatibleSoftwareVersion) {
-	if to == "" {
-		to = "5.4.6"
-	}
-
 	if from == "" {
 		return
 	}
 
 	for ver, csv := range compatibleSoftwareVersions {
-		if version.Compare(ver, from, ">=") && version.Compare(ver, to, "<=") {
+
+		if version.Compare(ver, from, ">=") && (to == "" || version.Compare(ver, to, "<=")) {
 			versions = append(versions, csv)
+			//} else {
+			//	csv.Checked = &FalseVariable
 		}
 	}
 
@@ -581,8 +240,25 @@ func (sw *ShopwareClient) update() error {
 	}
 	defer os.Remove(filename)
 
+	respBody, err := sw.get("https://api.shopware.com/pluginstatics/all")
+	if err != nil {
+		return errors.Wrap(err, "unable to download plugin versions")
+	}
+
+	var statistics PluginStatisticsResponse
+	err = json.Unmarshal(respBody, &statistics)
+	if err != nil {
+		return errors.Wrap(err, "unable to unmarshal statistics result")
+	}
+
+	compatibleSoftwareVersions = make(map[string]CompatibleSoftwareVersion)
+	for _, v := range statistics.SoftwareVersions {
+		v.Checked = &FalseVariable
+		compatibleSoftwareVersions[v.Name] = v
+	}
+
 	// Step 1: upload binary
-	respBody, err := sw.uploadFile(shopwareAPI+"plugins/"+strconv.Itoa(sw.pluginID)+"/binaries", filename, prefix+".zip")
+	respBody, err = sw.uploadFile(shopwareAPI+"plugins/"+strconv.Itoa(sw.pluginID)+"/binaries", filename, prefix+".zip")
 	if err != nil {
 		return errors.Wrap(err, "unable to upload plugin zip")
 	}
@@ -609,7 +285,8 @@ func (sw *ShopwareClient) update() error {
 	binaryDetails.SetChangelog("de_DE", sw.lastChangelogByLocale("de"))
 	binaryDetails.SetChangelog("en_GB", sw.lastChangelogByLocale("en"))
 	binaryDetails.CompatibleSoftwareVersions = compatibleVersions(sw.pluginInfo.Compatibility.MinVersion, sw.pluginInfo.Compatibility.MaxVersion)
-	binaryDetails.LicenseCheckRequired = true
+	binaryDetails.LicenseCheckRequired = false
+	binaryDetails.IonCubeEncrypted = false
 	binaryDetails.Version = sw.pluginInfo.Version
 	err = sw.put(shopwareAPI+"plugins/"+strconv.Itoa(sw.pluginID)+"/binaries/"+strconv.Itoa(binaryDetails.ID), binaryDetails)
 	if err != nil {
@@ -639,6 +316,27 @@ func (sw *ShopwareClient) update() error {
 	// or we have to re-use it and upload the binary again to this version
 
 	return nil
+}
+
+func (sw *ShopwareClient) get(url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("X-Shopware-Token", sw.token)
+
+	resp, err := sw.c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 400 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return body, fmt.Errorf("bad status code: %d - %s", resp.StatusCode, string(body))
+	}
+
+	return ioutil.ReadAll(resp.Body)
 }
 
 func (sw *ShopwareClient) put(url string, object interface{}) error {
