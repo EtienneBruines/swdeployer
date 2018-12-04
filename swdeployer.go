@@ -189,7 +189,9 @@ func compatibleVersions(from, to string) (versions []CompatibleSoftwareVersion) 
 	for ver, csv := range compatibleSoftwareVersions {
 
 		if version.Compare(ver, from, ">=") && (to == "" || version.Compare(ver, to, "<=")) {
-			versions = append(versions, csv)
+			if csv.Selectable {
+				versions = append(versions, csv)
+			}
 			//} else {
 			//	csv.Checked = &FalseVariable
 		}
